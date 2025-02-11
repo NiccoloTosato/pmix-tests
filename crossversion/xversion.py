@@ -15,7 +15,7 @@ import subprocess
 import shutil
 
 # put this in one place
-supported_versions = ["master", "v5.0", "v5.0.1", "v4.2", "v4.2.0", "v4.1", "v3.2"]
+supported_versions = ["master", "v5.0", "v4.2", "v4.1", "v3.2"]
 
 pmix_git_url      = "https://github.com/pmix/pmix.git"
 pmix_release_url  = "https://github.com/pmix/pmix/releases/download/"
@@ -393,6 +393,68 @@ if __name__ == "__main__":
         allBuilds.append(bld)
         servers.append(bld.branch)
         clients.append(bld.branch)
+
+    # 'server' -> 'client' pairs that are not supported
+    invalid_pairs.append(["master","master"])
+    invalid_pairs.append(["master","v5.0"])
+    invalid_pairs.append(["master","v4.2"])
+    invalid_pairs.append(["master","v4.1"])
+    invalid_pairs.append(["master","v3.2"])
+
+    invalid_pairs.append(["v5.0","master"])
+    invalid_pairs.append(["v5.0","v5.0"])
+    invalid_pairs.append(["v5.0","v4.2"])
+    invalid_pairs.append(["v5.0","v4.1"])
+    invalid_pairs.append(["v5.0","v3.2"])
+
+    invalid_pairs.append(["v4.2","master"])
+    invalid_pairs.append(["v4.2","v5.0"])
+    invalid_pairs.append(["v4.2","v4.2"])
+    invalid_pairs.append(["v4.2","v4.1"])
+    invalid_pairs.append(["v4.2","v3.2"])
+
+    invalid_pairs.append(["v4.1","master"])
+    invalid_pairs.append(["v4.1","v5.0"])
+    invalid_pairs.append(["v4.1","v4.2"])
+    invalid_pairs.append(["v4.1","v4.1"])
+    invalid_pairs.append(["v4.1","v3.2"])
+
+    invalid_pairs.append(["v3.2","master"])
+    invalid_pairs.append(["v3.2","v5.0"])
+    invalid_pairs.append(["v3.2","v4.2"])
+    invalid_pairs.append(["v3.2","v4.1"])
+    invalid_pairs.append(["v3.2","v3.2"])
+
+    # 'server' -> 'client' tool pairings that are not supported
+    invalid_tool_pairs.append(["master","master"])
+    invalid_tool_pairs.append(["master","v5.0"])
+    invalid_tool_pairs.append(["master","v4.2"])
+    invalid_tool_pairs.append(["master","v4.1"])
+    invalid_tool_pairs.append(["master","v3.2"])
+
+    invalid_tool_pairs.append(["v5.0","master"])
+    invalid_tool_pairs.append(["v5.0","v5.0"])
+    invalid_tool_pairs.append(["v5.0","v4.2"])
+    invalid_tool_pairs.append(["v5.0","v4.1"])
+    invalid_tool_pairs.append(["v5.0","v3.2"])
+
+    invalid_tool_pairs.append(["v4.2","master"])
+    invalid_tool_pairs.append(["v4.2","v5.0"])
+    invalid_tool_pairs.append(["v4.2","v4.2"])
+    invalid_tool_pairs.append(["v4.2","v4.1"])
+    invalid_tool_pairs.append(["v4.2","v3.2"])
+
+    invalid_tool_pairs.append(["v4.1","master"])
+    invalid_tool_pairs.append(["v4.1","v5.0"])
+    invalid_tool_pairs.append(["v4.1","v4.2"])
+    invalid_tool_pairs.append(["v4.1","v4.1"])
+    invalid_tool_pairs.append(["v4.1","v3.2"])
+
+    invalid_tool_pairs.append(["v3.2","master"])
+    invalid_tool_pairs.append(["v3.2","v5.0"])
+    invalid_tool_pairs.append(["v3.2","v4.2"])
+    invalid_tool_pairs.append(["v3.2","v4.1"])
+    invalid_tool_pairs.append(["v3.2","v3.2"])
 
     # find the timeout command - if on Mac, this may well
     # be "gtimeout", so check for it
