@@ -5,7 +5,11 @@ FINAL_RTN=0
 
 # Number of nodes - for accounting/verification purposes
 # Default: 1
-NUM_NODES=${CI_NUM_NODES:-1}
+NUM_NODES=${CI_NUM_NODES:-${SLURM_NNODES:-1}}
+
+NUM_TASKS=${SLURM_TASKS_PER_NODE:-5}
+# Fix for slurm format 4x(2)
+NUM_TASKS=$(echo "$NUM_TASKS" | grep -o '^[0-9]\+')
 
 _shutdown()
 {
@@ -35,7 +39,7 @@ date
 # ---------------------------------------
 # Run the test - Hostname
 # ---------------------------------------
-prun --map-by ppr:5:node hostname 2>&1 | tee output-hn.txt
+prun --map-by ppr:$NUM_TASKS:node hostname 2>&1 | tee output-hn.txt
 
 # ---------------------------------------
 # Verify the results
@@ -48,7 +52,7 @@ if [[ $ERRORS -ne 0 ]] ; then
 fi
 
 LINES=`wc -l output-hn.txt | awk '{print $1}'`
-if [[ $LINES -ne $(( 5 * $NUM_NODES )) ]] ; then
+if [[ $LINES -ne $(( $NUM_TASKS * $NUM_NODES )) ]] ; then
     echo "ERROR: Incorrect number of lines of output"
     FINAL_RTN=2
     _shutdown
@@ -63,8 +67,7 @@ fi
 # ---------------------------------------
 # Run the test - Hello World (PMIx)
 # ---------------------------------------
-prun --map-by ppr:5:node ./hello 2>&1 | tee output.txt
-
+prun --map-by ppr:$NUM_TASKS:node ./hello 2>&1 | tee output.txt
 # ---------------------------------------
 # Verify the results
 # ---------------------------------------
@@ -76,7 +79,7 @@ if [[ $ERRORS -ne 0 ]] ; then
 fi
 
 LINES=`wc -l output.txt | awk '{print $1}'`
-if [[ $LINES -ne $(( 5 * $NUM_NODES )) ]] ; then
+if [[ $LINES -ne $(( $NUM_TASKS * $NUM_NODES )) ]] ; then
     echo "ERROR: Incorrect number of lines of output"
     FINAL_RTN=2
     _shutdown
