@@ -5,6 +5,7 @@ FINAL_RTN=0
 
 # Number of nodes - for accounting/verification purposes
 # Default: 1
+
 NUM_NODES=${CI_NUM_NODES:-${SLURM_NNODES:-1}}
 NUM_TASKS=${SLURM_TASKS_PER_NODE:-5}
 # Fix for slurm format 4x(2)
@@ -16,12 +17,13 @@ if [ "x" != "x$CI_HOSTFILE" ] ; then
     _HOSTFILE_ARG="--hostfile ${CI_HOSTFILE}"
 fi
 
+#TODO: CREATE HOSTFILE WITH SLURM ?
 _DASH_HOST_ARG=""
 _DASH_HOST_NUM_NODES=1
 if [ "x" != "x$CI_HOSTFILE" ] ; then
     _HOST_A=`head -n 1 ${CI_HOSTFILE}`
     _HOST_B=`tail -n 1 ${CI_HOSTFILE}`
-    _DASH_HOST_ARG="--host ${_HOST_A}:5,${_HOST_B}:5"
+    _DASH_HOST_ARG="--host ${_HOST_A}:${NUM_TASKS},${_HOST_B}:${NUM_TASKS}"
     _DASH_HOST_NUM_NODES=2
 fi
 
