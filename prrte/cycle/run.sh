@@ -3,11 +3,18 @@
 # Final return value
 FINAL_RTN=0
 
+
 # Number of nodes - for accounting/verification purposes
-NUM_NODES=${CI_NUM_NODES:-1}
+# Default: 1
+#NUM_NODES=${CI_NUM_NODES:-1}
+NUM_NODES=${CI_NUM_NODES:-${SLURM_NNODES:-1}}
+
+NUM_TASKS=${SLURM_TASKS_PER_NODE:-5}
+# Fix for slurm format 4x(2)
+NUM_TASKS=$(echo "$NUM_TASKS" | grep -o '^[0-9]\+')
 
 NUM_ITERS=200
-
+TIMEFORMAT="RUNTIME,%R,%U,%S" 
 _shutdown()
 {
     # ---------------------------------------
@@ -43,7 +50,7 @@ echo "======================="
 rm -f output.txt ; touch output.txt
 for n in $(seq 1 $NUM_ITERS) ; do
     echo -e "--------------------- Execution (hostname): $n"
-    $_CMD 2>&1 | tee -a output.txt
+    time $_CMD 2>&1 | tee -a output.txt
     st=${PIPESTATUS[0]}
     if [ $st -ne 0 ] ; then
         echo "ERROR: prun failed with $st"
@@ -94,7 +101,7 @@ echo "======================="
 rm -f output.txt ; touch output.txt
 for n in $(seq 1 $NUM_ITERS) ; do
     echo -e "--------------------- Execution (init/finalize): $n"
-    $_CMD 2>&1 | tee -a output.txt
+    time $_CMD 2>&1 | tee -a output.txt
     st=${PIPESTATUS[0]}
     if [ $st -ne 0 ] ; then
         echo "ERROR: prun failed with $st"
@@ -137,7 +144,7 @@ prte --no-ready-msg --report-uri dvm.uri $hostarg &
 # ---------------------------------------
 # Run the test - init_finalize
 # ---------------------------------------
-_CMD="prun --dvm-uri file:dvm.uri --num-connect-retries 1000 -n 4 --map-by :oversubscribe ./multi_init_finalize_pmix"
+_CMD="prun --dvm-uri file:dvm.uri --num-connect-retries 1000 -n $(($NUM_TASKS * $NUM_NODES)) --map-by :oversubscribe ./multi_init_finalize_pmix"
 echo ""
 echo "======================="
 echo "Running multi_init_finalize_pmix: $_CMD"
@@ -146,7 +153,7 @@ echo "======================="
 rm -f output.txt ; touch output.txt
 for n in $(seq 1 $NUM_ITERS) ; do
     echo -e "--------------------- Execution (init/finalize): $n"
-    $_CMD 2>&1 | tee -a output.txt
+    time $_CMD 2>&1 | tee -a output.txt
     st=${PIPESTATUS[0]}
     if [ $st -ne 0 ] ; then
         echo "ERROR: prun failed with $st"

@@ -10,7 +10,7 @@ NUM_NODES=${CI_NUM_NODES:-${SLURM_NNODES:-1}}
 NUM_TASKS=${SLURM_TASKS_PER_NODE:-5}
 # Fix for slurm format 4x(2)
 NUM_TASKS=$(echo "$NUM_TASKS" | grep -o '^[0-9]\+')
-
+TIMEFORMAT="RUNTIME,%R,%U,%S"
 _shutdown()
 {
     # ---------------------------------------
@@ -39,7 +39,8 @@ date
 # ---------------------------------------
 # Run the test - Hostname
 # ---------------------------------------
-prun --map-by ppr:$NUM_TASKS:node hostname 2>&1 | tee output-hn.txt
+
+time prun --map-by ppr:$NUM_TASKS:node hostname 2>&1 | tee output-hn.txt
 
 # ---------------------------------------
 # Verify the results
@@ -67,7 +68,7 @@ fi
 # ---------------------------------------
 # Run the test - Hello World (PMIx)
 # ---------------------------------------
-prun --map-by ppr:$NUM_TASKS:node ./hello 2>&1 | tee output.txt
+time prun --map-by ppr:$NUM_TASKS:node ./hello 2>&1 | tee output.txt
 # ---------------------------------------
 # Verify the results
 # ---------------------------------------
