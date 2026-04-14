@@ -14,7 +14,7 @@ NUM_TASKS=${SLURM_TASKS_PER_NODE:-5}
 NUM_TASKS=$(echo "$NUM_TASKS" | grep -o '^[0-9]\+')
 
 NUM_ITERS=200
-TIMEFORMAT="RUNTIME,%R,%U,%S" 
+
 _shutdown()
 {
     # ---------------------------------------
@@ -48,6 +48,7 @@ echo "Running hostname: $_CMD"
 echo "======================="
 
 rm -f output.txt ; touch output.txt
+TIMEFORMAT="Test1-hostname,%R,%U,%S"
 for n in $(seq 1 $NUM_ITERS) ; do
     echo -e "--------------------- Execution (hostname): $n"
     time $_CMD 2>&1 | tee -a output.txt
@@ -99,6 +100,7 @@ echo "Running init_finalize_pmix: $_CMD"
 echo "======================="
 
 rm -f output.txt ; touch output.txt
+TIMEFORMAT="Test2-init_finalize,%R,%U,%S"
 for n in $(seq 1 $NUM_ITERS) ; do
     echo -e "--------------------- Execution (init/finalize): $n"
     time $_CMD 2>&1 | tee -a output.txt
@@ -151,6 +153,7 @@ echo "Running multi_init_finalize_pmix: $_CMD"
 echo "======================="
 
 rm -f output.txt ; touch output.txt
+TIMEFORMAT="Test3-multi_init_finalize,%R,%U,%S"
 for n in $(seq 1 $NUM_ITERS) ; do
     echo -e "--------------------- Execution (init/finalize): $n"
     time $_CMD 2>&1 | tee -a output.txt

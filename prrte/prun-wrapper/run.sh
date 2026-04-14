@@ -10,7 +10,7 @@ NUM_NODES=${CI_NUM_NODES:-${SLURM_NNODES:-1}}
 NUM_TASKS=${SLURM_TASKS_PER_NODE:-5}
 # Fix for slurm format 4x(2)
 NUM_TASKS=$(echo "$NUM_TASKS" | grep -o '^[0-9]\+')
-TIMEFORMAT="RUNTIME,%R,%U,%S"
+
 # Note this test is best exercised if you have a --hostfile or --host arg
 _HOSTFILE_ARG=""
 if [ "x" != "x$CI_HOSTFILE" ] ; then
@@ -30,6 +30,7 @@ fi
 # ---------------------------------------
 # Run the test - Hostname with --hostfile
 # ---------------------------------------
+TIMEFORMAT="Test1-hostname,%R,%U,%S"
 time prterun --map-by ppr:$NUM_TASKS:node ${_HOSTFILE_ARG} hostname 2>&1 | tee output-hn.txt
 
 # ---------------------------------------
@@ -56,6 +57,7 @@ fi
 # ---------------------------------------
 ABS_PATH=`which prterun`
 ABS_PATH=`dirname $ABS_PATH`
+TIMEFORMAT="Test2-hostname-absolute,%R,%U,%S"
 time $ABS_PATH/prterun --map-by ppr:$NUM_TASKS:node ${_HOSTFILE_ARG} hostname 2>&1 | tee output-hn.txt
 
 # ---------------------------------------
@@ -81,6 +83,7 @@ fi
 # ---------------------------------------
 # Run the test - Hostname with --host
 # ---------------------------------------
+TIMEFORMAT="Test3-hostname-hostarg,%R,%U,%S"
 time prterun --map-by ppr:$NUM_TASKS:node ${_DASH_HOST_ARG} hostname 2>&1 | tee output-hn.txt
 
 # ---------------------------------------
@@ -106,6 +109,7 @@ fi
 # ---------------------------------------
 # Run the test - Hello World (PMIx) with --hostfile
 # ---------------------------------------
+TIMEFORMAT="Test4-hello_world-hostfile,%R,%U,%S"
 time prterun --map-by ppr:$NUM_TASKS:node ${_HOSTFILE_ARG} ../hello_world/hello 2>&1 | tee output.txt
 
 # ---------------------------------------
@@ -126,6 +130,7 @@ fi
 # ---------------------------------------
 # Run the test - Hello World (PMIx) with --hostfile
 # ---------------------------------------
+TIMEFORMAT="Test5-hello_world-hostfile,%R,%U,%S"
 time prterun --map-by ppr:$NUM_TASKS:node ${_DASH_HOST_ARG} ../hello_world/hello 2>&1 | tee output.txt
 
 # ---------------------------------------
